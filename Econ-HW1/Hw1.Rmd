@@ -1,0 +1,179 @@
+---
+title: "HW1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+str(data)
+```
+
+```{r SHARK}
+names(data)<-c("pixel", "cost", "tuna", "shark")
+
+#Shark Alpha 0.01777361
+1/(sum(data$shark))^0.6
+
+
+shark<-data %>% 
+  select(-"tuna") %>% 
+  mutate(cost.per.suit= cost/shark)
+
+##Take the most cost effective areas for the sharks
+top.shark<-shark %>%
+  arrange(cost.per.suit) %>% 
+  mutate(total.cost = cumsum(cost)) %>% 
+  filter(total.cost<200)
+
+##Calculate the probability of survival 
+0.01777361*(sum(topshark2$shark))^0.6 #0.5953418
+
+
+```
+
+```{r}
+trial.shark<- data %>% 
+  select(-"tuna")  
+
+```
+
+```{r}
+attach(data)
+plot(data$shark, data$cost)
+```
+
+
+
+Tuna Alpha 0.01604304
+```{r}
+1/(sum(data$tuna))^0.6
+```
+
+```{r}
+tuna.a<-0.01604304
+shark.a<-0.01777361
+
+random.1<-data %>% 
+  arrange(pixel) %>% 
+  mutate(pixel.cost = cumsum(cost)) %>%
+  filter(pixel.cost<=250) %>% 
+  mutate(frac = ifelse(pixel.cost<=200, 1, (200-lag(pixel.cost))/cost)) %>% 
+  mutate(total.cost = (cost)*frac) %>%
+  mutate(total.cost = cumsum(total.cost)) %>% 
+  filter(total.cost<=200 & frac>=0)
+
+tuna.a*((sum(random.1$tuna))^0.06)
+shark.a*sum(random.1$s.sur)
+  
+random.2<-data %>% 
+  arrange(-pixel) %>% 
+  mutate(pixel.cost = cumsum(cost)) %>%
+  filter(pixel.cost<=250) %>% 
+  mutate(frac = ifelse(pixel.cost<=200, 1, (200-lag(pixel.cost))/cost)) %>% 
+  mutate(t.sur = tuna^(.06)*frac) %>% 
+  mutate(s.sur = shark^(.06)*frac) %>% 
+  mutate(total.cost = (cost)*frac) %>%
+  mutate(total.cost = cumsum(total.cost)) %>% 
+  filter(total.cost<=200 & frac>=0)
+
+random.3<-data %>% 
+  arrange(shark) %>% 
+  mutate(pixel.cost = cumsum(cost)) %>%
+  filter(pixel.cost<=250) %>% 
+  mutate(frac = ifelse(pixel.cost<=200, 1, (200-lag(pixel.cost))/cost)) %>% 
+  mutate(t.sur = tuna^(.06)*frac) %>% 
+  mutate(s.sur = shark^(.06)*frac) %>% 
+  mutate(total.cost = (cost)*frac) %>%
+  mutate(total.cost = cumsum(total.cost)) %>% 
+  filter(total.cost<=200 & frac>=0)
+
+random.4<-data %>% 
+  arrange(-shark) %>% 
+  mutate(pixel.cost = cumsum(cost)) %>%
+  filter(pixel.cost<=250) %>% 
+  mutate(frac = ifelse(pixel.cost<=200, 1, (200-lag(pixel.cost))/cost)) %>% 
+  mutate(t.sur = tuna^(.06)*frac) %>% 
+  mutate(s.sur = shark^(.06)*frac) %>% 
+  mutate(total.cost = (cost)*frac) %>%
+  mutate(total.cost = cumsum(total.cost)) %>% 
+  filter(total.cost<=200 & frac>=0)
+
+random.5<-data %>% 
+  arrange(tuna) %>% 
+  mutate(pixel.cost = cumsum(cost)) %>%
+  filter(pixel.cost<=250) %>% 
+  mutate(frac = ifelse(pixel.cost<=200, 1, (200-lag(pixel.cost))/cost)) %>% 
+  mutate(t.sur = tuna^(.06)*frac) %>% 
+  mutate(s.sur = shark^(.06)*frac) %>% 
+  mutate(total.cost = (cost)*frac) %>%
+  mutate(total.cost = cumsum(total.cost)) %>% 
+  filter(total.cost<=200 & frac>=0)
+
+random.6<-data %>% 
+  arrange(-tuna) %>% 
+  mutate(pixel.cost = cumsum(cost)) %>%
+  filter(pixel.cost<=250) %>% 
+  mutate(frac = ifelse(pixel.cost<=200, 1, (200-lag(pixel.cost))/cost)) %>% 
+  mutate(t.sur = tuna^(.06)*frac) %>% 
+  mutate(s.sur = shark^(.06)*frac) %>% 
+  mutate(total.cost = (cost)*frac) %>%
+  mutate(total.cost = cumsum(total.cost)) %>% 
+  filter(total.cost<=200 & frac>=0)
+
+random.7<-data %>%
+  mutate(cost.per.suit= cost/shark) %>% 
+  arrange(cost.per.suit) %>% 
+  mutate(pixel.cost = cumsum(cost)) %>%
+  filter(pixel.cost<=250) %>% 
+  mutate(frac = ifelse(pixel.cost<=200, 1, (200-lag(pixel.cost))/cost)) %>% 
+  mutate(t.sur = tuna^(.06)*frac) %>% 
+  mutate(s.sur = shark^(.06)*frac) %>% 
+  mutate(total.cost = (cost)*frac) %>%
+  mutate(total.cost = cumsum(total.cost)) %>% 
+  filter(total.cost<=200 & frac>=0)
+
+random.8<-data %>%
+  mutate(cost.per.suit= cost/shark) %>% 
+  arrange(-cost.per.suit) %>% 
+  mutate(pixel.cost = cumsum(cost)) %>%
+  filter(pixel.cost<=250) %>% 
+  mutate(frac = ifelse(pixel.cost<=200, 1, (200-lag(pixel.cost))/cost)) %>% 
+  mutate(t.sur = tuna^(.06)*frac) %>% 
+  mutate(s.sur = shark^(.06)*frac) %>% 
+  mutate(total.cost = (cost)*frac) %>%
+  mutate(total.cost = cumsum(total.cost)) %>% 
+  filter(total.cost<=200 & frac>=0)
+
+random.9<-data %>%
+  mutate(cost.per.suit= cost/tuna) %>% 
+  arrange(cost.per.suit) %>% 
+  mutate(pixel.cost = cumsum(cost)) %>%
+  filter(pixel.cost<=250) %>% 
+  mutate(frac = ifelse(pixel.cost<=200, 1, (200-lag(pixel.cost))/cost)) %>% 
+  mutate(t.sur = tuna^(.06)*frac) %>% 
+  mutate(s.sur = shark^(.06)*frac) %>% 
+  mutate(total.cost = (cost)*frac) %>%
+  mutate(total.cost = cumsum(total.cost)) %>% 
+  filter(total.cost<=200 & frac>=0)
+
+random.10<-data %>%
+  mutate(cost.per.suit= cost/tuna) %>% 
+  arrange(-cost.per.suit) %>% 
+  mutate(pixel.cost = cumsum(cost)) %>%
+  filter(pixel.cost<=250) %>% 
+  mutate(frac = ifelse(pixel.cost<=200, 1, (200-lag(pixel.cost))/cost)) %>% 
+  mutate(t.sur = tuna^(.06)*frac) %>% 
+  mutate(s.sur = shark^(.06)*frac) %>% 
+  mutate(total.cost = (cost)*frac) %>%
+  mutate(total.cost = cumsum(total.cost)) %>% 
+  filter(total.cost<=200 & frac>=0)
+```
+
+```{r}
+tuna.sur <- function(t.suit) {
+  t.sur <- 0.01604304*((t.suit - 32) * (5 / 9)) + 273.15
+  return(temp_K)
+}
+```
+
