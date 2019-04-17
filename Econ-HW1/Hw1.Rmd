@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(tidyverse)
 library(readr)
-data <- read_csv("~/Econ-HW1/Econ-HW1/HW1 Data.csv")
+data <- read_csv("HW1 Data.csv")
 ```
 
 ```{r SHARK}
@@ -41,6 +41,7 @@ max.shark<-data %>%
 shark.a*((sum(max.shark$shark.suit))^0.6) #0.5970874
 tuna.a*((sum(max.shark$tuna.suit))^0.6) #0.5956662
 
+write.csv(max.shark, "Shark Priority.csv", row.names = FALSE)
 
 ```
 c)Max for Tuna 
@@ -61,6 +62,8 @@ max.tuna<-data %>%
 ##Calculate the probability of survival 
 shark.a*((sum(max.tuna$shark.suit))^0.6) #0.5884504
 tuna.a*((sum(max.tuna$tuna.suit))^0.6) #0.6075198
+
+
 ```
 
 d)Random selection of pixels within the budget. Repeat 10 times 
@@ -70,8 +73,34 @@ random<-data[sample(nrow(data)),] %>%
   mutate(frac = ifelse(pixel.cost<=200, 1, (200-lag(pixel.cost))/cost)) %>% 
   mutate(total.cost = (cost)*frac) %>%
   mutate(total.cost = cumsum(total.cost)) %>% 
-  filter(total.cost<=200 & frac>=0)
+  filter(total.cost<=200 & frac>=0) %>% 
+  mutate(tuna=tuna*frac) %>% 
+  mutate(shark=shark*frac)
 
 tuna.a*((sum(random$tuna))^0.6)
 shark.a*((sum(random$shark))^0.6)
 ```
+
+e)Weighted 
+(Shark suit/cost * W)+(Tuna Suit/cost * (1-W))
+
+Not knowing which species is more important to society, suppose you place weight w on survival of
+sharks and weight (1-w) on survival of tuna. By varying the weights, w, trace out the efficient
+frontier of attainable survival probabilities for both species. 
+```{r}
+w<-0.2
+weight<-data %>% 
+  mutate(weight.suit= (shark/cost)*w+(tuna/cost)*(1-w)) %>%
+  arrange(-weight.suit) %>%
+  mutate(pixel.cost = cumsum(cost)) %>%
+  mutate(frac = ifelse(pixel.cost<=200, 1, (200-lag(pixel.cost))/cost)) %>% 
+  mutate(total.cost = (cost)*frac) %>%
+  mutate(total.cost = cumsum(total.cost)) %>% 
+  filter(total.cost<=200 & frac>=0) %>% 
+  mutate(tuna=tuna*frac) %>% 
+  mutate(shark=shark*frac)
+
+tuna.a*((sum(weight$tuna))^0.6)
+shark.a*((sum(weight$shark))^0.6)
+```
+
