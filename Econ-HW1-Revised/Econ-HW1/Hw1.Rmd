@@ -1,0 +1,103 @@
+---
+title: "HW1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(readr)
+data <- read_csv("HW1 Data.csv")
+```
+
+```{r SHARK}
+#rename columns
+names(data)<-c("pixel", "cost", "tuna", "shark")
+
+#calculate alpha
+shark.a<-1/(sum(data$shark))^0.6 #Shark Alpha 0.01777361
+tuna.a<-1/(sum(data$tuna))^0.6 #Tuna Alpha 0.01604304
+
+```
+a)
+b)Max for sharks
+```{r}
+q=500
+
+max.shark<-data %>%
+  mutate(cost.per.suit= cost/shark) %>% 
+  arrange(cost.per.suit) %>% 
+  mutate(pixel.cost = cumsum(cost)) %>%
+  mutate(frac = ifelse(pixel.cost<=q, 1, (q-lag(pixel.cost))/cost)) %>% 
+  mutate(total.cost = (cost)*frac) %>%
+  mutate(total.cost = cumsum(total.cost)) %>% 
+  filter(total.cost<=q & frac>=0) %>% 
+  mutate(shark.suit = shark*frac) %>% 
+  mutate(tuna.suit = tuna*frac) 
+  
+
+##Calculate the probability of survival 
+shark.a*((sum(max.shark$shark.suit))^0.6) #0.5970874
+tuna.a*((sum(max.shark$tuna.suit))^0.6) #0.5956662
+```
+c)Max for Tuna 
+
+```{r}
+max.tuna<-data %>%
+  mutate(cost.per.suit= cost/tuna) %>% 
+  arrange(cost.per.suit) %>% 
+  mutate(pixel.cost = cumsum(cost)) %>%
+  mutate(frac = ifelse(pixel.cost<=200, 1, (200-lag(pixel.cost))/cost)) %>% 
+  mutate(total.cost = (cost)*frac) %>%
+  mutate(total.cost = cumsum(total.cost)) %>% 
+  filter(total.cost<=200 & frac>=0) %>% 
+  mutate(shark.suit = shark*frac) %>% 
+  mutate(tuna.suit = tuna*frac) 
+  
+
+##Calculate the probability of survival 
+shark.a*((sum(max.tuna$shark.suit))^0.6) #0.5884504
+tuna.a*((sum(max.tuna$tuna.suit))^0.6) #0.6075198
+
+
+```
+
+d)Random selection of pixels within the budget. Repeat 10 times 
+```{r}
+random<-data[sample(nrow(data)),] %>% 
+  mutate(pixel.cost = cumsum(cost)) %>%
+  mutate(frac = ifelse(pixel.cost<=200, 1, (200-lag(pixel.cost))/cost)) %>% 
+  mutate(total.cost = (cost)*frac) %>%
+  mutate(total.cost = cumsum(total.cost)) %>% 
+  filter(total.cost<=200 & frac>=0) %>% 
+  mutate(tuna=tuna*frac) %>% 
+  mutate(shark=shark*frac)
+
+tuna.a*((sum(random$tuna))^0.6)
+shark.a*((sum(random$shark))^0.6)
+```
+
+e)Weighted 
+(Shark suit/cost * W)+(Tuna Suit/cost * (1-W))
+
+Calculated weighted cumulative suitability, then picked top pixels until budget is met. 
+```{r}
+w<-1
+weight<-data %>% 
+  mutate(weight.suit= (shark/cost)*w+(tuna/cost)*(1-w)) %>%
+  arrange(-weight.suit) %>%
+  mutate(pixel.cost = cumsum(cost)) %>%
+  mutate(frac = ifelse(pixel.cost<=200, 1, (200-lag(pixel.cost))/cost)) %>% 
+  mutate(total.cost = (cost)*frac) %>%
+  mutate(total.cost = cumsum(total.cost)) %>% 
+  filter(total.cost<=200 & frac>=0) %>% 
+  mutate(tuna=tuna*frac) %>% 
+  mutate(shark=shark*frac)
+
+tuna.a*((sum(weight$tuna))^0.6)
+shark.a*((sum(weight$shark))^0.6)
+```
+
